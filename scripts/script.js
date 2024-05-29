@@ -28,6 +28,10 @@ function switchTeambuilder(){
   setTimeout(actuallySwitchTeambuilder, 1000)
 }
 
+function switchBattle() {
+  location.href = "./battle.html";
+}
+
 const songs = ["Harrisville.mp3", "Springdale.mp3", "Blossom.mp3", "SoAlone.mp3", "Uptown.mp3", "SanFantastico.mp3", "OldHarrisville.mp3", "Sakura.mp3"]
 
 function startGame(){
