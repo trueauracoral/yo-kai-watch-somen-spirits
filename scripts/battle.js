@@ -12,6 +12,8 @@ ctx.fillRect(0, 0, canvas.width, canvas.height);
 const middleWheele = loadImage("./images/battle/wheele-middle.png");
 const wheeleImage = loadImage("./images/battle/wheele.png")
 
+let isRotating = false;
+
 function loadImage(src) {
     var img = new Image();
     img.src = src;
@@ -41,6 +43,7 @@ ctx.drawImage(wheeleImage, 0, 0)
 ctx.drawImage(middleWheele, 0 , 0);
 drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
 
+var prevRotation = 0
 function rotateWheel() {
     var mouseCoords = getMousePosition(canvas, event);
     console.log(mouseCoords);
@@ -50,6 +53,11 @@ function rotateWheel() {
         x: mouseCoords.x - middleWidth,
         y: (mouseCoords.y - middleHeight) * -1
     }
+
+    const prevRectCoords = {
+        x: prevMouseCoords.x - middleWidth,
+        y: (prevMouseCoords.y - middleHeight) * -1
+    };
     
     console.log(rectCoords);
     
@@ -64,26 +72,35 @@ function rotateWheel() {
     ctx.closePath();
     
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/atan2
-    function calcAngleDegrees(x, y) {
-        return (Math.atan2(y, x) * 180) / Math.PI;
+    function calcAngle(x, y) {
+        return Math.atan2(y, x);
     }
+
+    const prevAngle = calcAngle(prevRectCoords.x, prevRectCoords.y);
+    const currentAngle = calcAngle(rectCoords.x, rectCoords.y);
+    const angleDifference = currentAngle - prevAngle;
+
+    prevRotation += angleDifference;
+
     var rotateCalculuation = Math.atan2(rectCoords.y, rectCoords.x);
     console.log(rotateCalculuation);
 
-    drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, rotateCalculuation);
+    drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, prevRotation);
+    
+    
+    prevMouseCoords = mouseCoords
 };
 
 let currentMouseCoords = { x: 0, y: 0 };
 
 canvas.addEventListener('pointerdown', (event) => {
     isRotating = true;
-    currentMouseCoords = getMousePosition(canvas, event);
+    prevMouseCoords = getMousePosition(canvas, event);
     rotateWheel();
 });
 
 canvas.addEventListener('pointermove', (event) => {
     if (isRotating) {
-        currentMouseCoords = getMousePosition(canvas, event);
         rotateWheel();
     }
 });
