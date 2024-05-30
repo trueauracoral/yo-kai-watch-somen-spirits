@@ -31,6 +31,7 @@ function getMousePosition(canvas, event) {
 // https://stackoverflow.com/questions/17411991/html5-canvas-rotate-image
 function drawImageCenter(image, x, y, cx, cy, scale, rotation){
     ctx.setTransform(scale, 0, 0, scale, x, y); // sets scale and origin
+    // ctx.rotate(0)
     ctx.rotate(rotation);
     ctx.drawImage(image, -cx, -cy);
     ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
@@ -40,8 +41,7 @@ ctx.drawImage(wheeleImage, 0, 0)
 ctx.drawImage(middleWheele, 0 , 0);
 drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
 
-var prevRotation = 0
-document.addEventListener('pointerdown', (event) => {
+function rotateWheel() {
     var mouseCoords = getMousePosition(canvas, event);
     console.log(mouseCoords);
     console.log(middleWidth, middleHeight);
@@ -67,8 +67,27 @@ document.addEventListener('pointerdown', (event) => {
     function calcAngleDegrees(x, y) {
         return (Math.atan2(y, x) * 180) / Math.PI;
     }
-    var rotateCalculuation = calcAngleDegrees(mouseCoords.x, mouseCoords.y)
+    var rotateCalculuation = Math.atan2(rectCoords.y, rectCoords.x);
     console.log(rotateCalculuation);
 
     drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, rotateCalculuation);
+};
+
+let currentMouseCoords = { x: 0, y: 0 };
+
+canvas.addEventListener('pointerdown', (event) => {
+    isRotating = true;
+    currentMouseCoords = getMousePosition(canvas, event);
+    rotateWheel();
+});
+
+canvas.addEventListener('pointermove', (event) => {
+    if (isRotating) {
+        currentMouseCoords = getMousePosition(canvas, event);
+        rotateWheel();
+    }
+});
+
+canvas.addEventListener('pointerup', () => {
+    isRotating = false;
 });
