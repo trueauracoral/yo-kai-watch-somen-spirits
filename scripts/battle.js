@@ -10,7 +10,8 @@ ctx.fillStyle = "black";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 const middleWheele = loadImage("./images/battle/wheele-middle.png");
-const wheeleImage = loadImage("./images/battle/wheele.png");
+const wheeleImage = loadImage("./images/battle/wheele-active.png");
+const wheeleSelectImage = loadImage("./images/battle/wheele.png");
 
 let isRotating = false;
 let prevMouseCoords = { x: middleWidth, y: middleHeight };
@@ -82,7 +83,7 @@ function rotateWheel(event) {
     prevRotation += angleDifference;
     prevRotation = (prevRotation + 2 * Math.PI) % (2 * Math.PI);
 
-    drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, prevRotation);
+    drawImageCenter(wheeleSelectImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, prevRotation);
     console.log("Image Rotation: ", prevRotation);
 
     prevMouseCoords = mouseCoords;
@@ -125,6 +126,7 @@ canvas.addEventListener('pointermove', (event) => {
 canvas.addEventListener('pointerup', () => {
     isRotating = false;
     snapToSection();
+    drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
 });
 
 canvas.addEventListener('pointerleave', () => {
