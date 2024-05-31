@@ -80,6 +80,7 @@ function rotateWheel(event) {
     const angleDifference = currentAngle - prevAngle;
 
     prevRotation += angleDifference;
+    prevRotation = (prevRotation + 2 * Math.PI) % (2 * Math.PI);
 
     drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, prevRotation);
     console.log("Image Rotation: ", prevRotation);
