@@ -1,5 +1,7 @@
 #canvas {
-    width: 75%;
-    height: 75%;
+    max-width: 75%;
+    max-height: 75%;
+    width: auto;
+    height: auto;
     position: absolute;
 }
