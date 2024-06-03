@@ -18,6 +18,8 @@ let prevMouseCoords = { x: middleWidth, y: middleHeight };
 let prevRotation = 0;
 const angles = [0, Math.PI / 3, (2 * Math.PI) / 3, Math.PI, (4 * Math.PI) / 3, (5 * Math.PI) / 3, 2 * Math.PI];
 
+var slots = [1, 2, 3, 4, 5, 6];
+
 function loadImage(src) {
     var img = new Image();
     img.src = src;
@@ -43,7 +45,10 @@ function drawImageCenter(image, x, y, cx, cy, scale, rotation) {
 ctx.drawImage(wheeleImage, 0, 0);
 ctx.drawImage(middleWheele, 0, 0);
 
-drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 60);
+drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
+
+var originalAngle = 0;
+var newAngle = 0;
 
 function rotateWheel(event) {
     var mouseCoords = getMousePosition(canvas, event);
@@ -79,7 +84,8 @@ function rotateWheel(event) {
     const prevAngle = calcAngle(prevRectCoords.x, prevRectCoords.y);
     const currentAngle = calcAngle(rectCoords.x, rectCoords.y);
     const angleDifference = currentAngle - prevAngle;
-
+    
+    originalAngle = prevRotation;
     prevRotation += angleDifference;
     prevRotation = (prevRotation + 2 * Math.PI) % (2 * Math.PI);
 
@@ -105,8 +111,27 @@ function snapToSection() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(middleWheele, 0, 0);
 
-    drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, closestAngle);
+    drawImageCenter(wheeleSelectImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, closestAngle);
+    
     prevRotation = closestAngle;
+    newAngle = prevRotation;
+}
+
+function updateSlots(originalAngle, newAngle) {
+    const angleDiff = newAngle - originalAngle;
+    console.log(angleDiff);
+    const segmentsRotated = Math.round((angleDiff * 180 / Math.PI) / 60); //% slots.length;
+    console.log(segmentsRotated);
+    if (segmentsRotated > 0) {
+        for (let i = 0; i < segmentsRotated; i++) {
+            slots.push(slots.shift());
+        }
+    } else {
+        for (let i = 0; i < Math.abs(segmentsRotated); i++) {
+            slots.unshift(slots.pop());
+        }
+    }
+    console.log("Updated Slots: ", slots);
 }
 
 ctx.drawImage(middleWheele, 0, 0);
@@ -126,10 +151,16 @@ canvas.addEventListener('pointermove', (event) => {
 canvas.addEventListener('pointerup', () => {
     isRotating = false;
     snapToSection();
+    updateSlots(originalAngle, newAngle);
+    prevRotation = newAngle;
     drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
 });
 
 canvas.addEventListener('pointerleave', () => {
-    isRotating = false;
-    snapToSection();
+    if (isRotating) {
+        isRotating = false;
+        snapToSection();
+        updateSlots(originalAngle, newAngle);
+        drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
+    }
 });
