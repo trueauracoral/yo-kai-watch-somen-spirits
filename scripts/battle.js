@@ -18,7 +18,7 @@ let prevMouseCoords = { x: middleWidth, y: middleHeight };
 let prevRotation = 0;
 const angles = [0, Math.PI / 3, (2 * Math.PI) / 3, Math.PI, (4 * Math.PI) / 3, (5 * Math.PI) / 3, 2 * Math.PI];
 
-var slots = [1, 2, 3, 4, 5, 6];
+var slots = [{number: 1, name: "scary face"}, {number: 2, name: "happy face"}, {number: 3, name: "komosan"}, {number: 4, name: "patrick starfish"}, {number: 5, name: "jibanyan"}, {number: 6, name: "scary face"}];
 
 function loadImage(src) {
     var img = new Image();
@@ -95,6 +95,7 @@ function rotateWheel(event) {
     prevMouseCoords = mouseCoords;
 }
 
+var prevSegment = 0
 function snapToSection() {
     let closestAngle = angles[0];
     let minDiff = Math.abs(prevRotation - angles[0]);
@@ -113,25 +114,40 @@ function snapToSection() {
 
     drawImageCenter(wheeleSelectImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, closestAngle);
     
+    var segments = Math.round(closestAngle * (180/Math.PI)) / 60;
+    console.log("Where we at: ", segments);
+
+    updateSlots(segments);
+    prevSegment = segments;
+
     prevRotation = closestAngle;
     newAngle = prevRotation;
 }
 
-function updateSlots(originalAngle, newAngle) {
-    const angleDiff = newAngle - originalAngle;
+function updateSlots(segments) {
+    const angleDiff =segments;
     console.log(angleDiff);
-    const segmentsRotated = Math.round((angleDiff * 180 / Math.PI) / 60); //% slots.length;
-    console.log(segmentsRotated);
-    if (segmentsRotated > 0) {
-        for (let i = 0; i < segmentsRotated; i++) {
+    if (angleDiff > 0) {
+        for (let i = 0; i < angleDiff; i++) {
             slots.push(slots.shift());
         }
     } else {
-        for (let i = 0; i < Math.abs(segmentsRotated); i++) {
+        for (let i = 0; i < Math.abs(angleDiff); i++) {
             slots.unshift(slots.pop());
         }
     }
     console.log("Updated Slots: ", slots);
+
+    var slot1 = document.getElementById("slot1");
+    var slot2 = document.getElementById("slot2");
+    var slot3 = document.getElementById("slot3");
+    var visualSlots = [slot1, slot2, slot3];
+    console.log(visualSlots);
+    for (var i = 0; i < visualSlots.length; i++) {
+        var text = visualSlots[i].getElementsByTagName("p")[0];
+        console.log(text);
+        text.textContent = `Slot${slots[i].number} - ${slots[i].name}`;
+    }
 }
 
 ctx.drawImage(middleWheele, 0, 0);
@@ -151,16 +167,14 @@ canvas.addEventListener('pointermove', (event) => {
 canvas.addEventListener('pointerup', () => {
     isRotating = false;
     snapToSection();
-    updateSlots(originalAngle, newAngle);
-    prevRotation = newAngle;
     drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
 });
 
-canvas.addEventListener('pointerleave', () => {
-    if (isRotating) {
-        isRotating = false;
-        snapToSection();
-        updateSlots(originalAngle, newAngle);
-        drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
-    }
-});
+// canvas.addEventListener('pointerleave', () => {
+//     if (isRotating) {
+//         isRotating = false;
+//         snapToSection();
+//         updateSlots(originalAngle, newAngle);
+//         drawImageCenter(wheeleImage, middleWidth, middleHeight, middleWidth, middleHeight, 1, 0);
+//     }
+// });
