@@ -124,6 +124,7 @@ function snapToSection() {
     newAngle = prevRotation;
 }
 
+// iksvo
 function updateSlots(segments) {
     const angleDiff =segments;
     console.log(angleDiff);
